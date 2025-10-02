@@ -259,6 +259,9 @@ void        add_token(t_token **tokens, t_token **last, t_token_type type, char 
 t_file      *build_file_list(char **redirect, char **file);
 void        free_file_list(t_file *file);
 
+/* Additional parsing helpers */
+char        *get_env_value_array(char *name, char **env);
+
 /* Libft functions */
 int         ft_strcmp(const char *s1, const char *s2);
 int         ft_strncmp(const char *s1, const char *s2, size_t n);
@@ -272,6 +275,7 @@ int         ft_isalpha(int c);
 int         ft_isalnum(int c);
 size_t      ft_strlen(const char *s);
 char        **ft_split(const char *s, char c);
+char        *ft_itoa(int n);
 void        free_2d_arr(char **arr);
 void        free_split(char **strs);
 

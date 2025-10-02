@@ -6,6 +6,20 @@ READLINE_FLAGS = -lreadline
 
 # Source files
 SRCS = main.c \
+       utils/libft.c \
+       parsing/parsing.c \
+       parsing/tokenizer.c \
+       parsing/token.c \
+       parsing/helper_funcs.c \
+       parsing/var_expansion.c \
+       parsing/variables.c \
+       parsing/misc.c \
+       parsing/support.c \
+       parsing/wildcard.c \
+       parsing/pipe_err_check.c \
+       parsing/redirection_err.c \
+       parsing/side_functions.c \
+       parsing/stripper.c \
        builtins/builtin.c \
        builtins/cd.c \
        builtins/echo.c \
@@ -33,28 +47,23 @@ SRCS = main.c \
 # Object files
 OBJS = $(SRCS:.c=.o)
 
-# Libft
-LIBFT_DIR = utils/libft
-LIBFT = $(LIBFT_DIR)/libft.a
+all: $(NAME)
 
-all: $(LIBFT) $(NAME)
-
-$(LIBFT):
-	@make -C $(LIBFT_DIR)
-
-$(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(READLINE_FLAGS) -o $(NAME)
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) $(READLINE_FLAGS) -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS)
-	@make -C $(LIBFT_DIR) clean
+# If using libft:
+# 	@make -C $(LIBFT_DIR) clean
 
 fclean: clean
 	rm -f $(NAME)
-	@make -C $(LIBFT_DIR) fclean
+# If using libft:
+# 	@make -C $(LIBFT_DIR) fclean
 
 re: fclean all
 
