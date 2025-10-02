@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 static int	match_pattern(const char *pattern, const char *str)
 {

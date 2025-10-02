@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 static void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_env *env,
 		int expand)
@@ -82,22 +82,42 @@ static int	process_heredoc(t_file *file, t_env *env)
 int	collecting_heredoc(t_cmd *cmd, t_env *env)
 {
 	t_cmd	*cur;
+	t_file	*file_list;
 	t_file	*file;
+	int		i;
 
 	cur = cmd;
 	g_exit_status = 0;
 	while (cur)
 	{
-		file = cur->file;
-		while (file)
+		/* Check for heredocs in redirect/file arrays */
+		if (cur->redirect && cur->file)
 		{
-			if (file->type == TOKEN_HEREDOC
-				|| file->type == TOKEN_HEREDOC_quoted)
+			i = 0;
+			while (cur->redirect[i] && cur->file[i])
 			{
-				if (process_heredoc(file, env))
-					return (1);
+				if (ft_strcmp(cur->redirect[i], "<<") == 0)
+				{
+					/* Create temporary t_file for heredoc processing */
+					file_list = malloc(sizeof(t_file));
+					if (!file_list)
+						return (1);
+					file_list->name = cur->file[i];
+					file_list->type = TOKEN_HEREDOC;
+					file_list->quoted = 0; /* Determine from parsing if needed */
+					file_list->h_fd = -1;
+					file_list->next = NULL;
+					
+					if (process_heredoc(file_list, env))
+					{
+						free(file_list);
+						return (1);
+					}
+					/* Store heredoc fd back somehow - may need to modify structure */
+					free(file_list);
+				}
+				i++;
 			}
-			file = file->next;
 		}
 		cur = cur->next;
 	}

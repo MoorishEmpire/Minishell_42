@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 void	handle_heredoc(t_file *f)
 {
@@ -27,13 +27,24 @@ int	open_file_by_type(t_file *f)
 
 void	apply_redirection(t_cmd *cmd)
 {
+	t_file	*file_list;
 	t_file	*f;
 
-	f = cmd->file;
-	while (f)
+	/* Handle both array format and linked list format */
+	if (cmd->redirect && cmd->file)
 	{
-		handle_redir(f);
-		f = f->next;
+		/* Build t_file linked list from arrays */
+		file_list = build_file_list(cmd->redirect, cmd->file);
+		if (file_list)
+		{
+			f = file_list;
+			while (f)
+			{
+				handle_redir(f);
+				f = f->next;
+			}
+			free_file_list(file_list);
+		}
 	}
 }
 

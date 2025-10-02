@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 int	useless(t_cmd *cmd, char **path)
 {
