@@ -79,11 +79,17 @@ static int	process_heredoc(char *delimiter, int quoted, t_env *env, int *h_fd)
 	return (0);
 }
 
+static int	is_heredoc_operator(char *op)
+{
+	if (!op)
+		return (0);
+	return (ft_strcmp(op, "<<") == 0);
+}
+
 int	collecting_heredoc(t_cmd *cmd, t_env *env)
 {
 	t_cmd	*cur;
 	int		i;
-	int		type;
 	int		h_fd;
 
 	cur = cmd;
@@ -98,8 +104,7 @@ int	collecting_heredoc(t_cmd *cmd, t_env *env)
 		i = 0;
 		while (cur->redirect[i] && cur->file[i])
 		{
-			type = get_redir_type(cur->redirect[i]);
-			if (type == TOKEN_HEREDOC)
+			if (is_heredoc_operator(cur->redirect[i]))
 			{
 				if (process_heredoc(cur->file[i], 0, env, &h_fd))
 					return (1);
