@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 static char	*join_paths(char *dir, char *cmd)
 {

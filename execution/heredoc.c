@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 static void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_env *env,
 		int expand)

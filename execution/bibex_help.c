@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 static int	**allocate_pipes_array_only(int cmd_count)
 {

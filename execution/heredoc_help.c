@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 void	write_line_to_pipe(int pipe_fd, char *line, t_env *env, int expand)
 {

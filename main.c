@@ -1,5 +1,4 @@
-#include "includes.h"
-#include "execution.h"
+#include "includes/minishell.h"
 
 int g_exit_status;
 

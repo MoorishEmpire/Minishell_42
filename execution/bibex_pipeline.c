@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 void	free_pipes(int **pipes, int count)
 {

@@ -1,4 +1,4 @@
-#include "../../includes/minishell.h"
+#include "../includes/minishell.h"
 
 static void	setup_pipe_redirection(t_child_ctx *ctx)
 {
