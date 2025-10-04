@@ -1,0 +1,326 @@
+═══════════════════════════════════════════════════════════════════════════════
+                        MINISHELL QUICK REFERENCE
+                    Everything You Need at a Glance
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           🚀 GETTING STARTED                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  make                              # Compile the project                    │
+│  ./minishell                       # Run the shell                          │
+│  (Ctrl+D to exit)                  # Or type: exit                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        📁 FILE STRUCTURE OVERVIEW                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  main.c                            → Main entry point                       │
+│  execution.h                       → Execution functions                    │
+│  includes.h                        → Parsing functions                      │
+│  minishell.h                       → Master header                          │
+│                                                                             │
+│  execution/builtins/               → Built-in commands (8 files)            │
+│  execution/*.c                     → Execution logic (15 files)             │
+│  parsing/*.c                       → Your parsing code                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          📚 DOCUMENTATION MAP                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  START HERE:                                                                │
+│  └─ ACTION_CHECKLIST.txt          → Step-by-step setup                     │
+│      └─ QUICK_START.md             → Compilation & basics                  │
+│                                                                             │
+│  UNDERSTANDING:                                                             │
+│  ├─ INTEGRATION_GUIDE.md           → How everything works                  │
+│  ├─ ARCHITECTURE_DIAGRAM.txt       → Visual diagrams                       │
+│  └─ MIGRATION_SUMMARY.md           → What changed                          │
+│                                                                             │
+│  TESTING:                                                                   │
+│  └─ VERIFICATION_CHECKLIST.md      → Test all features                     │
+│                                                                             │
+│  REFERENCE:                                                                 │
+│  ├─ README.md                      → Complete overview                     │
+│  ├─ execution.h                    → Function prototypes                   │
+│  └─ COMPLETION_SUMMARY.txt         → What was done                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        🔧 KEY DATA STRUCTURES                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  t_cmd - Command Structure:                                                │
+│    char **argv;          // ["cmd", "arg1", "arg2", NULL]                  │
+│    char **redirect;      // ["<", ">", NULL]                               │
+│    char **file;          // ["in.txt", "out.txt", NULL]                    │
+│    struct s_cmd *next;   // Next in pipeline                               │
+│                                                                             │
+│  t_env - Environment:                                                       │
+│    char *var;            // "PATH"                                          │
+│    char *value;          // "/usr/bin:/bin"                                │
+│    struct s_env *next;   // Next variable                                  │
+│                                                                             │
+│  t_token - Token:                                                           │
+│    char *value;          // Token content                                  │
+│    NodeType type;        // Token type                                     │
+│    struct s_token *next; // Next token                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         🔄 DATA FLOW PIPELINE                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  User Input                                                                 │
+│      ↓                                                                      │
+│  tokenizer()          → t_token (raw)                                       │
+│      ↓                                                                      │
+│  expanding_it()       → t_token (vars expanded)                             │
+│      ↓                                                                      │
+│  handel_wild_card()   → t_token (wildcards expanded)                        │
+│      ↓                                                                      │
+│  stripper()           → t_token (quotes removed)                            │
+│      ↓                                                                      │
+│  build_cmd_list()     → t_cmd (structured)                                 │
+│      ↓                                                                      │
+│  execute_command()    → Execution                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      ⚡ EXECUTION DECISION TREE                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  execute_command(t_cmd *cmd)                                                │
+│      ↓                                                                      │
+│  collecting_heredoc()  ← Process all heredocs first                         │
+│      ↓                                                                      │
+│  ┌────────────────────────────┐                                            │
+│  │ Multiple commands (pipes)? │                                            │
+│  └───────┬────────────────────┘                                            │
+│         Yes                No                                               │
+│          ↓                  ↓                                               │
+│   execute_pipeline()    Single command                                     │
+│                             ↓                                               │
+│                    ┌────────────────┐                                       │
+│                    │   is_builtin?  │                                       │
+│                    └───────┬────────┘                                       │
+│                           Yes  No                                           │
+│                            ↓    ↓                                           │
+│                    execute_  exec_                                          │
+│                    builtin() externals()                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       🎯 COMMON COMMAND EXAMPLES                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  BASIC:                                                                     │
+│    echo hello world                                                         │
+│    ls -la                                                                   │
+│    pwd                                                                      │
+│                                                                             │
+│  REDIRECTIONS:                                                              │
+│    cat < input.txt                       # Input from file                 │
+│    echo test > output.txt                # Overwrite file                  │
+│    echo more >> output.txt               # Append to file                  │
+│    cat << EOF                            # Heredoc                         │
+│                                                                             │
+│  PIPES:                                                                     │
+│    ls | grep txt                         # Simple pipe                     │
+│    cat file | grep x | wc -l             # Multiple pipes                  │
+│                                                                             │
+│  VARIABLES:                                                                 │
+│    export VAR=value                      # Set variable                    │
+│    echo $VAR                             # Use variable                    │
+│    echo $?                               # Exit status                     │
+│    unset VAR                             # Remove variable                 │
+│                                                                             │
+│  QUOTES:                                                                    │
+│    echo 'single $VAR'                    # No expansion                    │
+│    echo "double $VAR"                    # Expansion                       │
+│    echo 'mix'"ed"                        # Mixed quotes                    │
+│                                                                             │
+│  WILDCARDS:                                                                 │
+│    ls *.txt                              # Match files                     │
+│    cat test*.c                           # Pattern match                   │
+│                                                                             │
+│  BUILTINS:                                                                  │
+│    cd /tmp                               # Change directory                │
+│    cd ~                                  # Go home                         │
+│    cd -                                  # Previous directory              │
+│    exit                                  # Exit shell                      │
+│    exit 42                               # Exit with status               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         🎮 KEYBOARD SHORTCUTS                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Ctrl+C                → Interrupt (SIGINT)    → New prompt                │
+│  Ctrl+D                → EOF                   → Exit shell                │
+│  Ctrl+\                → Quit (SIGQUIT)        → Ignored/Core dump         │
+│  Up/Down Arrow         → Command history                                   │
+│  Ctrl+L                → Clear screen (readline)                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        🔍 KEY FUNCTIONS REFERENCE                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  PARSING (Your Code):                                                       │
+│    tokenizer()           → Create tokens                                   │
+│    expanding_it()        → Expand variables                                │
+│    handel_wild_card()    → Expand wildcards                                │
+│    stripper()            → Remove quotes                                   │
+│    build_cmd_list()      → Build t_cmd                                     │
+│                                                                             │
+│  EXECUTION:                                                                 │
+│    execute_command()     → Main dispatcher                                 │
+│    execute_pipeline()    → Handle pipes                                    │
+│    execute_builtin()     → Run builtins                                    │
+│    exec_externals()      → Run external commands                           │
+│    collecting_heredoc()  → Process heredocs                                │
+│    apply_redirection()   → Handle redirections                             │
+│                                                                             │
+│  BUILTINS:                                                                  │
+│    ft_echo()             → echo command                                    │
+│    ft_cd()               → cd command                                      │
+│    ft_pwd()              → pwd command                                     │
+│    ft_env()              → env command                                     │
+│    ft_export()           → export command                                  │
+│    ft_unset()            → unset command                                   │
+│    ft_exit()             → exit command                                    │
+│                                                                             │
+│  UTILITIES:                                                                 │
+│    is_builtin()          → Check if builtin                                │
+│    get_cmd_path()        → Resolve command path                            │
+│    get_env_value()       → Get environment variable                        │
+│    update_env_var()      → Update environment                              │
+│                                                                             │
+│  CLEANUP:                                                                   │
+│    clear_tokens()        → Free token list                                 │
+│    clear_cmd()           → Free command list                               │
+│    free_env()            → Free environment                                │
+│    free_2d_arr()         → Free string arrays                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        💾 COMPILATION QUICK REF                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  make                    → Compile everything                               │
+│  make clean              → Remove object files                              │
+│  make fclean             → Remove all generated files                       │
+│  make re                 → Recompile from scratch                           │
+│                                                                             │
+│  Required Libraries:                                                        │
+│    -lreadline            → Readline library                                │
+│    -L/path -lft          → Your libft                                      │
+│                                                                             │
+│  Flags:                                                                     │
+│    -Wall -Wextra -Werror → Compilation flags                               │
+│    -g                    → Debug symbols                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          🐛 DEBUGGING HELPERS                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Enable Debug Output (in main.c):                                          │
+│    print_parse(cmd);             → Show command structure                  │
+│    print_tokens(output);         → Show token list                         │
+│                                                                             │
+│  Memory Debugging:                                                          │
+│    valgrind ./minishell          → Check memory leaks                      │
+│    valgrind --leak-check=full    → Detailed leak check                     │
+│                                                                             │
+│  Compilation Debugging:                                                     │
+│    make 2>&1 | grep error        → Filter errors                           │
+│    make -n                       → Dry run (show commands)                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          📊 EXIT STATUS CODES                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│    0        → Success                                                       │
+│    1        → General error                                                │
+│    2        → Misuse of shell builtin                                      │
+│  126        → Command found but not executable                             │
+│  127        → Command not found                                            │
+│  130        → Terminated by Ctrl+C (SIGINT)                                │
+│  131        → Terminated by Ctrl+\ (SIGQUIT)                               │
+│  128 + N    → Terminated by signal N                                       │
+│  255        → Exit status out of range                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      ⚠️  COMMON ISSUES & FIXES                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ISSUE: Command not found                                                   │
+│  FIX:   Check $PATH, verify command exists                                 │
+│                                                                             │
+│  ISSUE: Segmentation fault                                                  │
+│  FIX:   Run valgrind, check NULL pointers                                  │
+│                                                                             │
+│  ISSUE: Compilation error: undefined reference                              │
+│  FIX:   Add missing source file to Makefile                                │
+│                                                                             │
+│  ISSUE: Memory leaks                                                        │
+│  FIX:   Ensure clear_cmd() and clear_tokens() are called                   │
+│                                                                             │
+│  ISSUE: Redirections don't work                                             │
+│  FIX:   Verify redirect[] and file[] are parallel arrays                   │
+│                                                                             │
+│  ISSUE: Pipes don't work                                                    │
+│  FIX:   Check cmd->next is set correctly                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        ✅ TESTING QUICK COMMANDS                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  # Basic functionality                                                      │
+│  echo test && pwd && ls                                                     │
+│                                                                             │
+│  # Redirections                                                             │
+│  echo hello > test.txt && cat < test.txt                                    │
+│                                                                             │
+│  # Pipes                                                                    │
+│  ls | grep minishell | wc -l                                                │
+│                                                                             │
+│  # Variables                                                                │
+│  export TEST=hello && echo $TEST                                            │
+│                                                                             │
+│  # Heredoc                                                                  │
+│  cat << EOF                                                                 │
+│  test                                                                       │
+│  EOF                                                                        │
+│                                                                             │
+│  # Complex                                                                  │
+│  cat << EOF | grep test > out.txt                                           │
+│  test line                                                                  │
+│  other line                                                                 │
+│  EOF                                                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        🎯 SUCCESS CHECKLIST                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [ ] Compiles without errors                                                │
+│  [ ] Basic commands work (echo, ls, pwd)                                    │
+│  [ ] Redirections work (<, >, >>)                                           │
+│  [ ] Heredocs work (<<)                                                     │
+│  [ ] Pipes work (|)                                                         │
+│  [ ] All builtins work                                                      │
+│  [ ] Variables expand correctly                                             │
+│  [ ] Quotes handled properly                                                │
+│  [ ] Wildcards expand                                                       │
+│  [ ] Signals work (Ctrl+C, Ctrl+D)                                          │
+│  [ ] No memory leaks (valgrind clean)                                       │
+│  [ ] Exit status correct ($?)                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+                            📞 NEED MORE HELP?
+═══════════════════════════════════════════════════════════════════════════════
+
+Read these files in order:
+  1. ACTION_CHECKLIST.txt     → Immediate next steps
+  2. QUICK_START.md            → Detailed setup guide
+  3. INTEGRATION_GUIDE.md      → Understanding the system
+  4. VERIFICATION_CHECKLIST.md → Comprehensive testing
+
+═══════════════════════════════════════════════════════════════════════════════
+                          🚀 READY TO START?
+                         Run: make && ./minishell
+═══════════════════════════════════════════════════════════════════════════════

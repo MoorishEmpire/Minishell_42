@@ -1,0 +1,43 @@
+═══════════════════════════════════════════════════════════════════════════════
+                           START HERE! 
+                    3 Commands to Get Running
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: Add headers to your parsing files
+──────────────────────────────────────────
+./add_headers.sh
+
+
+STEP 2: Fix the get_env_value conflict
+──────────────────────────────────────────
+In var_expansion/misc.c (or wherever you have it), rename:
+
+  char *get_env_value(char *name, char **env)
+  
+To:
+
+  char *get_env_value_array(char *name, char **env)
+
+Then find all calls to get_env_value in your var_expansion code and
+update them to get_env_value_array.
+
+
+STEP 3: Compile and run
+──────────────────────────────────────────
+cd utils/libft && make && cd ../..
+make
+./minishell
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                             THAT'S IT!
+═══════════════════════════════════════════════════════════════════════════════
+
+If you get errors, read: SETUP_COMPLETE.md
+
+Everything is integrated. All code is adapted. You just need to:
+1. Add the header to your files (script does it)
+2. Rename one function to avoid conflict
+3. Compile
+
+═══════════════════════════════════════════════════════════════════════════════
