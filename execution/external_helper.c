@@ -41,13 +41,13 @@ static char	*search_in_path(char *cmd, t_env *env)
 		full = join_paths(path[i], cmd);
 		if (access(full, X_OK) == 0)
 		{
-			free_2d_arr(path);
+			free_split(path);
 			return (full);
 		}
 		free(full);
 		i++;
 	}
-	free_2d_arr(path);
+	free_split(path);
 	return (NULL);
 }
 
@@ -92,5 +92,5 @@ void	exec_externals_in_child(t_cmd *cmd, t_env *env)
 	envp = list_to_env(env);
 	execute_child_process(cmd, path, envp);
 	free(path);
-	free_2d_arr(envp);
+	free_split(envp);
 }

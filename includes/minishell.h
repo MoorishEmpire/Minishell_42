@@ -2,6 +2,7 @@
 # define MINISHELL_H
 
 /* System headers */
+# include "../utils/libft/libft.h"
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -14,9 +15,6 @@
 # include <signal.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-
-/* Libft */
-# include "../utils/libft/libft.h"
 
 /* Color definitions */
 # define REDD     "\033[0;101m"
@@ -261,22 +259,10 @@ void        free_file_list(t_file *file);
 
 /* Additional parsing helpers */
 char        *get_env_value_array(char *name, char **env);
+void        free_split(char **arr);
+void		free_token_list(t_token *token);
 
-/* Libft functions */
-int         ft_strcmp(const char *s1, const char *s2);
-int         ft_strncmp(const char *s1, const char *s2, size_t n);
-char        *ft_strdup(const char *s);
-char        *ft_strjoin(const char *s1, const char *s2);
-char        *ft_substr(const char *s, unsigned int start, size_t len);
-char        *ft_strchr(const char *s, int c);
-void        ft_putstr_fd(const char *s, int fd);
-int         ft_isdigit(int c);
-int         ft_isalpha(int c);
-int         ft_isalnum(int c);
-size_t      ft_strlen(const char *s);
-char        **ft_split(const char *s, char c);
-char        *ft_itoa(int n);
-void        free_2d_arr(char **arr);
-void        free_split(char **strs);
+/* Utils functions */
+int			ft_strcmp(const char *s1, const char *s2);
 
 #endif /* MINISHELL_H */

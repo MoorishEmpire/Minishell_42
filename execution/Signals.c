@@ -1,4 +1,9 @@
+#include <readline/readline.h>
 #include "../includes/minishell.h"
+
+extern void rl_replace_line(const char *, int);
+extern int rl_on_new_line(void);
+extern void rl_redisplay(void);
 
 extern int	g_exit_status;
 

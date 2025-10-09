@@ -1,12 +1,18 @@
 NAME = minishell
 
-CC = gcc
+CC = cc
+
+#CFLAGS = -Wall -Wextra -Werror -I includes/ -I/goinfre/$(USER)/homebrew/opt/readline/include #-g -fsanitize=address
+#LDFLAGS = -lreadline -lncurses -L/goinfre/$(USER)/homebrew/opt/readline/lib
+
 CFLAGS = -Wall -Wextra -Werror -g
-READLINE_FLAGS = -lreadline
+LDFLAGS = -lreadline
+
+HEADER =  ./includes/minishell.h
+LIBFT_DIR = ./utils/libft
 
 # Source files
 SRCS = main.c \
-       utils/libft.c \
        parsing/parsing.c \
        parsing/tokenizer.c \
        parsing/token.c \
@@ -49,21 +55,20 @@ OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(READLINE_FLAGS) -o $(NAME)
+$(NAME): $(OBJS) $
+	@make -C $(LIBFT_DIR)
+	$(CC) $(OBJS) $(LIBFT_DIR)/libft.a $(LDFLAGS) -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
+	@make clean -C $(LIBFT_DIR)
 	rm -f $(OBJS)
-# If using libft:
-# 	@make -C $(LIBFT_DIR) clean
 
 fclean: clean
+	@make fclean -C $(LIBFT_DIR)
 	rm -f $(NAME)
-# If using libft:
-# 	@make -C $(LIBFT_DIR) fclean
 
 re: fclean all
 

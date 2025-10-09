@@ -65,7 +65,7 @@ char		*get_env_value(t_env *env, const char *key)
 {
 	while (env)
 	{
-		if (ft_strcmp(env->var, key) == 0)
+		if (ft_strncmp(env->var, key, 2) == 0)
 			return (env->value);
 		env = env->next;
 	}

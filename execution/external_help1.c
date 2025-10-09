@@ -5,7 +5,7 @@ void	handle_fork_error(char *path, char **envp)
 	ft_putstr_fd("minishell: fork failed\n", 2);
 	g_exit_status = 1;
 	free(path);
-	free_2d_arr(envp);
+	free_split(envp);
 }
 
 void	handle_path_not_found(t_cmd *cmd)

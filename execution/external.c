@@ -86,5 +86,5 @@ void	exec_externals(t_cmd *cmd, t_env *env)
 	else
 		handle_fork_error(path, envp);
 	free(path);
-	free_2d_arr(envp);
+	free_split(envp);
 }

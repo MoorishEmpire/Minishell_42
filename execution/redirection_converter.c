@@ -1,6 +1,7 @@
 #include "../includes/minishell.h"
 
 /* Convert parsing NodeType to execution t_token_type for redirections */
+/*
 static t_token_type convert_redir_type(NodeType type)
 {
     if (type == REDIR_IN)
@@ -13,6 +14,7 @@ static t_token_type convert_redir_type(NodeType type)
         return (TOKEN_HEREDOC);
     return (TOKEN_WORD);
 }
+*/
 
 /* Build t_file linked list from redirect and file arrays */
 t_file *build_file_list(char **redirect, char **file)

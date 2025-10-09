@@ -83,7 +83,7 @@ int	collecting_heredoc(t_cmd *cmd, t_env *env)
 {
 	t_cmd	*cur;
 	t_file	*file_list;
-	t_file	*file;
+	//t_file	*file;
 	int		i;
 
 	cur = cmd;
